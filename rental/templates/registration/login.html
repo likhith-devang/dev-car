@@ -1,0 +1,47 @@
+{% extends 'rental/base.html' %}
+
+{% block title %}Login - Car Rental{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Login</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        {% if form.username|add_class:'form-control' %}
+                            {{ form.username|add_class:'form-control' }}
+                        {% else %}
+                            <input type="text" name="username" id="id_username" class="form-control" required>
+                        {% endif %}
+                        {{ form.username.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Password</label>
+                        {% if form.password|add_class:'form-control' %}
+                            {{ form.password|add_class:'form-control' }}
+                        {% else %}
+                            <input type="password" name="password" id="id_password" class="form-control" required>
+                        {% endif %}
+                        {{ form.password.errors }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="{% url 'admin:index' %}">Contact admin</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% comment %}
+If you get an error about 'add_class', add this to your project:
+https://django-widget-tweaks.readthedocs.io/en/latest/
+Or, just use {{ form.username }} and {{ form.password }} without add_class.
+{% endcomment %} 

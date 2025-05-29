@@ -1,0 +1,101 @@
+{% extends 'rental/base.html' %}
+
+{% block title %}{{ car.year }} {{ car.make }} {{ car.model }} - Car Rental{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {% if car.image %}
+            <img src="{{ car.image.url }}" class="img-fluid rounded" alt="{{ car.make }} {{ car.model }}" style="width: 100%; height: 400px; object-fit: cover;">
+        {% else %}
+            <img src="https://via.placeholder.com/800x400?text={{ car.make }}+{{ car.model }}" class="img-fluid rounded" alt="No image available" style="width: 100%; height: 400px; object-fit: cover;">
+        {% endif %}
+        
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h1>{{ car.year }} {{ car.make }} {{ car.model }}</h1>
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'car_edit' car.id %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit Car
+                </a>
+            {% endif %}
+        </div>
+        <p class="badge bg-primary">{{ car.get_car_type_display }}</p>
+        
+        <div class="mt-4">
+            <h3>Description</h3>
+            <p>{{ car.description }}</p>
+        </div>
+        
+        <div class="mt-4">
+            <h3>Specifications</h3>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Make:</strong> {{ car.make }}</li>
+                <li class="list-group-item"><strong>Model:</strong> {{ car.model }}</li>
+                <li class="list-group-item"><strong>Year:</strong> {{ car.year }}</li>
+                <li class="list-group-item"><strong>Type:</strong> {{ car.get_car_type_display }}</li>
+                <li class="list-group-item">
+                    <strong>Daily Rate:</strong> 
+                    {{ car.get_daily_rate_display }}
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">Rent This Car</h3>
+                {% if not car.available %}
+                    <div class="alert alert-danger">This car is currently unavailable for rent.</div>
+                {% elif user.is_authenticated %}
+                    <form method="post" action="{% url 'create_rental' car.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pickup_time" class="form-label">Pickup Time</label>
+                            <input type="time" class="form-control" id="pickup_time" name="pickup_time" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="need_driver" name="need_driver">
+                            <label class="form-check-label" for="need_driver">Need a driver?</label>
+                        </div>
+                        <div class="mb-3 driver-fields" style="display: none;">
+                            <label for="pickup_location" class="form-label">Pickup Location</label>
+                            <textarea class="form-control" id="pickup_location" name="pickup_location" rows="3" 
+                                    placeholder="Enter your complete address for driver pickup"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Rent Now</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-info">
+                        Please <a href="{% url 'login' %}">login</a> to rent this car.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('need_driver').addEventListener('change', function() {
+    var driverFields = document.querySelector('.driver-fields');
+    var pickupLocation = document.getElementById('pickup_location');
+    if (this.checked) {
+        driverFields.style.display = 'block';
+        pickupLocation.required = true;
+    } else {
+        driverFields.style.display = 'none';
+        pickupLocation.required = false;
+    }
+});
+</script>
+{% endblock %}
+{% endblock %} 
