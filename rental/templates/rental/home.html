@@ -1,0 +1,38 @@
+{% extends 'rental/base.html' %}
+
+{% block title %}Home - Car Rental{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded">
+    <h1 class="display-4 font-weight-bold fw-bold">RENT CAR, PASSENGER AND GOODS VEHICLES</h1>
+    <p class="lead">Find your perfect ride for any occasion.</p>
+    <hr class="my-4">
+    <p>Browse our selection of cars and book your rental today!</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'car_list' %}" role="button">View Cars</a>
+</div>
+
+<h2 class="mt-5 mb-4">Featured Cars</h2>
+<div class="row">
+    {% for car in cars|slice:":3" %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            {% if car.image %}
+                <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.make }} {{ car.model }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+                <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=400&fit=crop" 
+                     class="card-img-top" alt="Car image" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ car.year }} {{ car.make }} {{ car.model }}</h5>
+                <p class="badge bg-primary">{{ car.get_car_type_display }}</p>
+                <p class="card-text">{{ car.description|truncatewords:20 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="text-primary mb-0">{{ car.get_daily_rate_display }}</h4>
+                    <a href="{% url 'car_detail' car.id %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

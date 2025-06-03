@@ -1,0 +1,70 @@
+{% extends 'rental/base.html' %}
+
+{% block title %}Dashboard - Car Rental{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Welcome, {{ user.username }}!</h1>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>Your Rentals</h2>
+            {% if rentals %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Car</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Total Cost</th>
+                                <th>Status</th>
+                                <th>Driver</th>
+                                <th>Pickup Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rental in rentals %}
+                            <tr>
+                                <td>{{ rental.car.year }} {{ rental.car.make }} {{ rental.car.model }}</td>
+                                <td>{{ rental.start_date|date:"M d, Y H:i" }}</td>
+                                <td>{{ rental.end_date|date:"M d, Y H:i" }}</td>
+                                <td>₹{{ rental.total_cost_in_rupees }}</td>
+                                <td>
+                                    {% if rental.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Completed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if rental.driver %}
+                                        <span class="badge bg-info">{{ rental.driver.user.get_full_name }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No Driver</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if rental.driver %}
+                                        <small>
+                                            <strong>Location:</strong> {{ rental.pickup_location }}<br>
+                                            <strong>Time:</strong> {{ rental.pickup_time }}
+                                        </small>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    You haven't rented any cars yet. <a href="{% url 'car_list' %}">Browse available cars</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
